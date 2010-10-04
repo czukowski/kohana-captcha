@@ -34,7 +34,8 @@ Or just:
 > Captcha::valid();
 
 In this case, the Captcha class instance will attempt to get the user response from $_POST array on its own
-(by default, $_POST['captcha']). Capthca driver classes may override this behavior, see Captcha_Recaptcha class.
+(by default, $\_POST['captcha']). Captcha driver classes may override this behavior, see Captcha_Recaptcha class
+for example.
 
 The reason for this was that ReCaptcha renders and verifies different number of fields, than other drivers.
 
