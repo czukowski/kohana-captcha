@@ -168,17 +168,26 @@ abstract class Captcha
 	 * @param string $response User's captcha response
 	 * @return boolean
 	 */
-	public static function valid($response)
+	public static function valid($response = NULL)
 	{
 		// Maximum one count per page load
 		static $counted;
 
+		// Captcha instance
+		$captcha = Captcha::instance();
+
 		// User has been promoted, always TRUE and don't count anymore
-		if (Captcha::instance()->promoted())
+		if ($captcha->promoted())
 			return TRUE;
 
+		// Get response automatically, if none provided
+		if ($response === NULL)
+		{
+			$response = $captcha->get_response();
+		}
+
 		// Challenge result
-		$result = (bool) (sha1(strtoupper($response)) === Session::instance()->get('captcha_response'));
+		$result = $captcha->check($response);
 
 		// Increment response counter
 		if ($counted !== TRUE)
@@ -188,12 +197,12 @@ abstract class Captcha
 			// Valid response
 			if ($result === TRUE)
 			{
-				Captcha::instance()->valid_count(Session::instance()->get('captcha_valid_count') + 1);
+				$captcha->valid_count(Session::instance()->get('captcha_valid_count') + 1);
 			}
 			// Invalid response
 			else
 			{
-				Captcha::instance()->invalid_count(Session::instance()->get('captcha_invalid_count') + 1);
+				$captcha->invalid_count(Session::instance()->get('captcha_invalid_count') + 1);
 			}
 		}
 
@@ -445,6 +454,22 @@ abstract class Captcha
 
 		// Free up resources
 		imagedestroy($this->image);
+	}
+
+	/**
+	 * Returns captcha response from $_POST array
+	 */
+	public function get_response()
+	{
+		return Arr::get($_POST, 'captcha', NULL);
+	}
+
+	/**
+	 * Checks user response against captcha challenge
+	 */
+	public function check($response)
+	{
+		return (bool) (sha1(strtoupper($response)) === Session::instance()->get('captcha_response'));
 	}
 
 	/* DRIVER METHODS */

@@ -18,6 +18,7 @@
  */
 
 return array(
+	'configured' => FALSE,	// Reserved
 	'default' => array(
 		'style'      	=> 'alpha',
 		'width'      	=> 150,
