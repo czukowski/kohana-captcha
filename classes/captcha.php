@@ -443,10 +443,12 @@ abstract class Captcha
 			return '<img src="'.url::site('captcha/'.Captcha::$config['group']).'" width="'.Captcha::$config['width'].'" height="'.Captcha::$config['height'].'" alt="Captcha" class="captcha" />';
 
 		// Send the correct HTTP header
-        Request::instance()->headers['Content-Type'] = 'image/'.$this->image_type;
-        Request::instance()->headers['Cache-Control'] = 'no-store, no-cache, must-revalidate, post-check=0, pre-check=0';
-        Request::instance()->headers['Pragma'] = 'no-cache';
-        Request::instance()->headers['Connection'] = 'close';
+        Request::current()->headers(array(
+			'Content-Type' => 'image/'.$this->image_type,
+			'Cache-Control' => 'no-store, no-cache, must-revalidate, post-check=0, pre-check=0',
+			'Pragma' => 'no-cache',
+			'Connection' => 'close',
+		));
 
 		// Pick the correct output function
 		$function = 'image'.$this->image_type;
@@ -461,7 +463,7 @@ abstract class Captcha
 	 */
 	public function get_response()
 	{
-		return Arr::get($_POST, 'captcha', NULL);
+		return Request::current()->post('captcha');
 	}
 
 	/**
